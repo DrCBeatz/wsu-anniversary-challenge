@@ -68,6 +68,12 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        transition: opacity 0.8s, transform 0.2s;
+      }
+
+      .fadeout {
+        opacity: 0;
+        pointer-events: none; /* so it's unclickable while fading */
       }
 
       /* Slight tilt/zoom effect on hover to mimic a sticky note effect */
@@ -143,8 +149,24 @@
     <!-- Instructions placeholder -->
     <div class="instructions">
       <p>
-        Welcome to the anniversary challenge! Click on a number on the sticky
-        board below to make it disappear. More details will be added soon.
+        Help us celebrate our 197th Anniversary and continue the ministry of
+        Wall Street United Church within and beyond our walls!
+      </p>
+      <p>
+        Click on a number on the sticky board below to identify how much you are
+        willing to contribute to our Anniversary Challenge (you can choose more
+        than one number if you want). The number will disappear as you click it,
+        and then you just have to do an e-transfer, use
+        <a
+          href="https://www.canadahelps.org/en/charities/wall-street-united-church/"
+          target="_blank"
+          >Canada Helps</a
+        >
+        or send a cheque to the church.
+      </p>
+      <p>
+        We hope to have every number claimed by Sunday, March 23, when we have
+        our Annual General Meeting. Thank you for your support!
       </p>
     </div>
 
@@ -174,7 +196,22 @@
         num.style.backgroundColor = noteColors[(i / 5) % noteColors.length];
 
         // Hide the number on click
-        num.onclick = () => num.classList.add("hidden");
+        num.addEventListener("click", () => {
+          // Trigger fade-out
+          num.classList.add("fadeout");
+
+          // Once the fade-out finishes, switch to .hidden
+          num.addEventListener(
+            "transitionend",
+            () => {
+              // Remove the fadeout class so it won't keep re-triggering
+              num.classList.remove("fadeout");
+              // Apply hidden so the sticky note stays in place but is invisible
+              num.classList.add("hidden");
+            },
+            { once: true } // callback runs only once
+          );
+        });
 
         container.appendChild(num);
       }
