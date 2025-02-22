@@ -138,6 +138,14 @@
           width: 680px; /* or 700px if you want even more space on the right */
         }
       }
+
+      .complete-challenge {
+        /* Remove or override the original background color */
+        background-color: transparent !important;
+
+        /* Background image covers the entire container */
+        background: url("wsu_church.png") center center / cover no-repeat;
+      }
     </style>
   </head>
   <body>
@@ -186,9 +194,14 @@
         "#ffc8dd", // pastel pink
       ];
 
+      // We know from 5 to 195 by 5s is 39 notes total
+      let remainingNotes = 0;
+
       // Generate numbers divisible by 5 from 5 to 195
       for (let i = 5; i <= 195; i += 5) {
-        let num = document.createElement("span");
+        remainingNotes++; // increment each time we create a note
+
+        const num = document.createElement("span");
         num.textContent = i;
         num.classList.add("number");
 
@@ -204,12 +217,18 @@
           num.addEventListener(
             "transitionend",
             () => {
-              // Remove the fadeout class so it won't keep re-triggering
               num.classList.remove("fadeout");
-              // Apply hidden so the sticky note stays in place but is invisible
               num.classList.add("hidden");
+
+              // Decrement remaining notes count
+              remainingNotes--;
+
+              // If no more notes left, show background image
+              if (remainingNotes === 0) {
+                container.classList.add("complete-challenge");
+              }
             },
-            { once: true } // callback runs only once
+            { once: true } // run this once per element
           );
         });
 
