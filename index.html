@@ -1,228 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wall Street United Church 197th Anniversary Challenge</title>
 
-    <style>
-      body {
-        margin: 20px;
-        font-family: sans-serif;
-        background-color: #f9f9f9; /* Light background to contrast board */
-        color: #333; /* Default text color */
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wall Street United Church 197th Anniversary Challenge</title>
 
-      /* Title styling */
-      .app-title {
-        text-align: center;
-        font-size: 26px;
-        font-weight: bold;
-        margin: 0 0 30px; /* Add more bottom margin for breathing room */
-        color: #4d4d4d;
-      }
+  <style>
+    body {
+      margin: 20px;
+      font-family: sans-serif;
+      background-color: #f9f9f9;
+      /* Light background to contrast board */
+      color: #333;
+      /* Default text color */
+    }
 
-      /* Instructions area */
+    /* Title styling */
+    .app-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+      margin: 0 0 30px;
+      /* Add more bottom margin for breathing room */
+      color: #4d4d4d;
+    }
+
+    /* Instructions area */
+    .instructions {
+      max-width: 600px;
+      margin: 0 auto 30px;
+      /* center horizontally + add bottom margin */
+      padding: 15px;
+      /* slightly larger padding for a nicer look */
+      background-color: #fff8e1;
+      /* a light background for emphasis */
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    /* The board container */
+    #numbersContainer {
+      width: 600px;
+      max-width: 100%;
+      /* Let it shrink on smaller screens */
+      margin: 0 auto;
+      /* Center horizontally */
+      margin-bottom: 20px;
+      /* Extra spacing below the board, if desired */
+
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      grid-gap: 10px;
+
+      /* The original yellowish background */
+      background-color: #ffe85f;
+      padding: 20px;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+      /* Ensures padding/border are included in 'width' */
+    }
+
+    /* Make the “sticky note” cells auto-size and keep them roughly square. */
+    .number {
+      background-color: #ffd3b6;
+      border: 1px solid #000;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 0;
+      font-size: 18px;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+
+      /* keeps them square in modern browsers */
+      aspect-ratio: 1 / 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      /* Sticky notes still fade out on click */
+      transition: opacity 0.8s, transform 0.2s;
+    }
+
+    .fadeout {
+      opacity: 0;
+      pointer-events: none;
+      /* so it's unclickable while fading */
+    }
+
+    /* Slight tilt/zoom effect on hover to mimic a sticky note effect */
+    .number:hover {
+      transform: rotate(-2deg) scale(1.03);
+    }
+
+    /* Hide the number when clicked */
+    .hidden {
+      visibility: hidden;
+    }
+
+    /* Instructions breakpoints: reduce the max-width as the screen narrows */
+    @media (max-width: 900px) {
       .instructions {
-        max-width: 600px;
-        margin: 0 auto 30px; /* center horizontally + add bottom margin */
-        padding: 15px; /* slightly larger padding for a nicer look */
-        background-color: #fff8e1; /* a light background for emphasis */
-        border: 1px solid #ccc;
-        border-radius: 5px;
+        max-width: 550px;
       }
+    }
 
-      /* The board container */
-      #numbersContainer {
-        width: 600px;
-        max-width: 100%; /* Let it shrink on smaller screens */
-        margin: 0 auto; /* Center horizontally */
-        margin-bottom: 20px; /* Extra spacing below the board, if desired */
-
-        display: grid;
-        grid-template-columns: repeat(10, 1fr);
-        grid-gap: 10px;
-
-        /* The original yellowish background */
-        background-color: #ffe85f;
-        padding: 20px;
-        border: 2px solid #ccc;
-        border-radius: 5px;
-        box-sizing: border-box; /* Ensures padding/border are included in 'width' */
+    @media (max-width: 700px) {
+      .instructions {
+        max-width: 450px;
       }
+    }
 
-      /* Make the “sticky note” cells auto-size and keep them roughly square. */
-      .number {
-        background-color: #ffd3b6;
-        border: 1px solid #000;
-        border-radius: 4px;
-        padding: 10px;
-        margin: 0;
-        font-size: 18px;
-        cursor: pointer;
-        user-select: none;
-        box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
-
-        /* keeps them square in modern browsers */
-        aspect-ratio: 1 / 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        /* Sticky notes still fade out on click */
-        transition: opacity 0.8s, transform 0.2s;
+    @media (max-width: 500px) {
+      .instructions {
+        max-width: 300px;
       }
+    }
 
-      .fadeout {
-        opacity: 0;
-        pointer-events: none; /* so it's unclickable while fading */
-      }
-
-      /* Slight tilt/zoom effect on hover to mimic a sticky note effect */
-      .number:hover {
-        transform: rotate(-2deg) scale(1.03);
-      }
-
-      /* Hide the number when clicked */
-      .hidden {
-        visibility: hidden;
-      }
-
-      /* Instructions breakpoints: reduce the max-width as the screen narrows */
-      @media (max-width: 900px) {
-        .instructions {
-          max-width: 550px;
-        }
-      }
-      @media (max-width: 700px) {
-        .instructions {
-          max-width: 450px;
-        }
-      }
-      @media (max-width: 500px) {
-        .instructions {
-          max-width: 300px;
-        }
-      }
-
-      /*
+    /*
       Board breakpoints:
       Decrease number of columns (and thus overall width) as screen narrows.
       */
-      @media (max-width: 900px) {
-        #numbersContainer {
-          grid-template-columns: repeat(8, 1fr);
-          width: 560px; /* or 580px, so sticky notes don’t overflow */
-        }
+    @media (max-width: 900px) {
+      #numbersContainer {
+        grid-template-columns: repeat(8, 1fr);
+        width: 560px;
+        /* or 580px, so sticky notes don’t overflow */
       }
-      @media (max-width: 700px) {
-        #numbersContainer {
-          grid-template-columns: repeat(6, 1fr);
-          width: 400px;
-        }
+    }
+
+    @media (max-width: 700px) {
+      #numbersContainer {
+        grid-template-columns: repeat(6, 1fr);
+        width: 400px;
       }
-      @media (max-width: 500px) {
-        #numbersContainer {
-          grid-template-columns: repeat(4, 1fr);
-          width: 300px;
-        }
+    }
+
+    @media (max-width: 500px) {
+      #numbersContainer {
+        grid-template-columns: repeat(4, 1fr);
+        width: 300px;
       }
-      @media (min-width: 901px) {
-        #numbersContainer {
-          width: 680px; /* or 700px if you want even more space on the right */
-        }
+    }
+
+    @media (min-width: 901px) {
+      #numbersContainer {
+        width: 680px;
+        /* or 700px if you want even more space on the right */
       }
+    }
 
-      /* When complete, we just switch the background to the church image (no fade). */
-      #numbersContainer.complete-challenge {
-        background: url("wsu_church.jpg") center center / cover no-repeat;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Title -->
-    <div class="app-title">
-      Wall Street United Church 197th Anniversary Challenge
-    </div>
+    /* When complete, we just switch the background to the church image (no fade). */
+    #numbersContainer.complete-challenge {
+      background: url("wsu_church.jpg") center center / cover no-repeat;
+    }
+  </style>
+</head>
 
-    <!-- Instructions placeholder -->
-    <div class="instructions">
-      <p>
-        Help us celebrate our 197th Anniversary and continue the ministry of
-        Wall Street United Church within and beyond our walls!
-      </p>
-      <p>
-        Click on a number on the sticky board below to identify how much you are
-        willing to contribute to our Anniversary Challenge (you can choose more
-        than one number if you want). The number will disappear as you click it,
-        and then you just have to do an e-transfer, use
-        <a
-          href="https://www.canadahelps.org/en/charities/wall-street-united-church/"
-          target="_blank"
-          >Canada Helps</a
-        >
-        or send a cheque to the church.
-      </p>
-      <p>
-        We hope to have every number claimed by Sunday, March 23, when we have
-        our Annual General Meeting. Thank you for your support!
-      </p>
-    </div>
+<body>
+  <!-- Title -->
+  <div class="app-title">
+    Wall Street United Church 197th Anniversary Challenge
+  </div>
 
-    <!-- Number Board -->
-    <div id="numbersContainer"></div>
+  <!-- Instructions placeholder -->
+  <div class="instructions">
+    <p>
+      Help us celebrate our 197th Anniversary and continue the ministry of
+      Wall Street United Church within and beyond our walls!
+    </p>
+    <p>
+      Click on a number on the sticky board below to identify how much you are
+      willing to contribute to our Anniversary Challenge (you can choose more
+      than one number if you want). The number will disappear as you click it,
+      and then you just have to do an e-transfer, use
+      <a href="https://www.canadahelps.org/en/charities/wall-street-united-church/" target="_blank">Canada Helps</a>
+      or send a cheque to the church.
+    </p>
+    <p><strong>Note: once you have clicked your number, it cannot be undone.</strong></p>
+    <p>
+      We hope to have every number claimed by Sunday, March 23, when we have
+      our Annual General Meeting. Thank you for your support!
+    </p>
+  </div>
 
-    <script>
-      const container = document.getElementById("numbersContainer");
+  <!-- Number Board -->
+  <div id="numbersContainer"></div>
 
-      // Optional: cycle through multiple "sticky note" colors
-      const noteColors = [
-        "#ffd3b6", // light orange
-        "#ffaaa5", // light pink
-        "#c0deff", // light blue
-        "#ffffbf", // light yellow
-        "#baffc9", // light green
-        "#ffc8dd", // pastel pink
-      ];
+  <script>
+    const container = document.getElementById("numbersContainer");
 
-      // We know from 5 to 195 by 5s is 39 notes total
-      let remainingNotes = 0;
+    // Optional: cycle through multiple "sticky note" colors
+    const noteColors = [
+      "#ffd3b6", // light orange
+      "#ffaaa5", // light pink
+      "#c0deff", // light blue
+      "#ffffbf", // light yellow
+      "#baffc9", // light green
+      "#ffc8dd", // pastel pink
+    ];
 
-      // Generate numbers divisible by 5 from 5 to 195
-      for (let i = 5; i <= 195; i += 5) {
-        remainingNotes++; // increment each time we create a note
+    // We know from 5 to 195 by 5s is 39 notes total
+    let remainingNotes = 0;
 
-        const num = document.createElement("span");
-        num.textContent = i;
-        num.classList.add("number");
+    // Generate numbers divisible by 5 from 5 to 195
+    for (let i = 5; i <= 195; i += 5) {
+      remainingNotes++; // increment each time we create a note
 
-        // Pick a color in a cycle
-        num.style.backgroundColor = noteColors[(i / 5) % noteColors.length];
+      const num = document.createElement("span");
+      num.textContent = i;
+      num.classList.add("number");
 
-        // On click, fade out the sticky note
-        num.addEventListener("click", () => {
-          num.classList.add("fadeout");
+      // Pick a color in a cycle
+      num.style.backgroundColor = noteColors[(i / 5) % noteColors.length];
 
-          // Once the fade-out finishes, hide it
-          num.addEventListener(
-            "transitionend",
-            () => {
-              num.classList.remove("fadeout");
-              num.classList.add("hidden");
+      // On click, fade out the sticky note
+      num.addEventListener("click", () => {
+        num.classList.add("fadeout");
 
-              remainingNotes--;
+        // Once the fade-out finishes, hide it
+        num.addEventListener(
+          "transitionend",
+          () => {
+            num.classList.remove("fadeout");
+            num.classList.add("hidden");
 
-              // If no more notes left, instantly switch to background image
-              if (remainingNotes === 0) {
-                container.classList.add("complete-challenge");
-              }
-            },
-            { once: true }
-          );
-        });
+            remainingNotes--;
 
-        container.appendChild(num);
-      }
-    </script>
-  </body>
+            // If no more notes left, instantly switch to background image
+            if (remainingNotes === 0) {
+              container.classList.add("complete-challenge");
+            }
+          },
+          { once: true }
+        );
+      });
+
+      container.appendChild(num);
+    }
+  </script>
+</body>
+
 </html>
