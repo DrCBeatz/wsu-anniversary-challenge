@@ -44,6 +44,7 @@
         grid-gap: 10px;
 
         background-color: #ffe85f; /* “Sticky-board” yellowish background */
+        transition: opacity 1s;
         padding: 20px;
         border: 2px solid #ccc;
         border-radius: 5px;
@@ -139,12 +140,22 @@
         }
       }
 
-      .complete-challenge {
-        /* Remove or override the original background color */
-        background-color: transparent !important;
+      /* .complete-challenge { */
+      /* Remove or override the original background color */
+      /* background-color: transparent !important; */
 
-        /* Background image covers the entire container */
+      /* Background image covers the entire container */
+      /* background: url("wsu_church.png") center center / cover no-repeat; */
+      /* } */
+
+      #numbersContainer.complete-challenge {
+        /* background-color: transparent !important; */
         background: url("wsu_church.jpg") center center / cover no-repeat;
+        opacity: 0;
+      }
+
+      #numbersContainer.complete-challenge.show {
+        opacity: 1; /* transitions over 1s because of #numbersContainer's CSS */
       }
     </style>
   </head>
@@ -226,6 +237,9 @@
               // If no more notes left, show background image
               if (remainingNotes === 0) {
                 container.classList.add("complete-challenge");
+                requestAnimationFrame(() => {
+                  container.classList.add("show");
+                });
               }
             },
             { once: true } // run this once per element
