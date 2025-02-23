@@ -41,6 +41,8 @@
 
     /* The board container */
     #numbersContainer {
+      position: relative;
+      /* enables absolutely positioned children */
       width: 600px;
       max-width: 100%;
       /* Let it shrink on smaller screens */
@@ -120,8 +122,8 @@
     }
 
     /*
-      Board breakpoints:
-      Decrease number of columns (and thus overall width) as screen narrows.
+        Board breakpoints:
+        Decrease number of columns (and thus overall width) as screen narrows.
       */
     @media (max-width: 900px) {
       #numbersContainer {
@@ -152,9 +154,34 @@
       }
     }
 
-    /* When complete, we just switch the background to the church image (no fade). */
+    /* When complete, we switch the background to the church image. */
     #numbersContainer.complete-challenge {
       background: url("wsu_church.jpg") center center / cover no-repeat;
+    }
+
+    /*
+       * Completion message styling:
+       * .completion-message is positioned absolutely over the container.
+       * It's hidden by default and shown when .complete-challenge is set.
+       */
+    .completion-message {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    #numbersContainer.complete-challenge .completion-message {
+      display: block;
     }
   </style>
 </head>
@@ -187,7 +214,13 @@
   </div>
 
   <!-- Number Board -->
-  <div id="numbersContainer"></div>
+  <div id="numbersContainer">
+    <!-- Hidden text that appears when all notes are clicked -->
+    <div class="completion-message">
+      <p>Goal achieved!</p>
+      <p>Thank You so much for your Support of Wall Street!</p>
+    </div>
+  </div>
 
   <script>
     const container = document.getElementById("numbersContainer");
