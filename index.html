@@ -43,8 +43,8 @@
         grid-template-columns: repeat(10, 1fr);
         grid-gap: 10px;
 
-        background-color: #ffe85f; /* “Sticky-board” yellowish background */
-        transition: opacity 1s;
+        /* The original yellowish background */
+        background-color: #ffe85f;
         padding: 20px;
         border: 2px solid #ccc;
         border-radius: 5px;
@@ -62,13 +62,14 @@
         cursor: pointer;
         user-select: none;
         box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
-        transition: transform 0.2s;
 
         /* keeps them square in modern browsers */
         aspect-ratio: 1 / 1;
         display: flex;
         justify-content: center;
         align-items: center;
+
+        /* Sticky notes still fade out on click */
         transition: opacity 0.8s, transform 0.2s;
       }
 
@@ -107,55 +108,34 @@
       /*
       Board breakpoints:
       Decrease number of columns (and thus overall width) as screen narrows.
-    */
-
-      /* Medium screens: 8 columns */
+      */
       @media (max-width: 900px) {
         #numbersContainer {
           grid-template-columns: repeat(8, 1fr);
           width: 560px; /* or 580px, so sticky notes don’t overflow */
         }
       }
-
-      /* Smaller screens: 6 columns */
       @media (max-width: 700px) {
         #numbersContainer {
           grid-template-columns: repeat(6, 1fr);
           width: 400px;
         }
       }
-
-      /* Extra small: 4 columns */
       @media (max-width: 500px) {
         #numbersContainer {
           grid-template-columns: repeat(4, 1fr);
           width: 300px;
         }
       }
-
-      /* Large screens: bump the board wider so notes don't overflow on the right */
       @media (min-width: 901px) {
         #numbersContainer {
           width: 680px; /* or 700px if you want even more space on the right */
         }
       }
 
-      /* .complete-challenge { */
-      /* Remove or override the original background color */
-      /* background-color: transparent !important; */
-
-      /* Background image covers the entire container */
-      /* background: url("wsu_church.png") center center / cover no-repeat; */
-      /* } */
-
+      /* When complete, we just switch the background to the church image (no fade). */
       #numbersContainer.complete-challenge {
-        /* background-color: transparent !important; */
         background: url("wsu_church.jpg") center center / cover no-repeat;
-        opacity: 0;
-      }
-
-      #numbersContainer.complete-challenge.show {
-        opacity: 1; /* transitions over 1s because of #numbersContainer's CSS */
       }
     </style>
   </head>
@@ -219,30 +199,25 @@
         // Pick a color in a cycle
         num.style.backgroundColor = noteColors[(i / 5) % noteColors.length];
 
-        // Hide the number on click
+        // On click, fade out the sticky note
         num.addEventListener("click", () => {
-          // Trigger fade-out
           num.classList.add("fadeout");
 
-          // Once the fade-out finishes, switch to .hidden
+          // Once the fade-out finishes, hide it
           num.addEventListener(
             "transitionend",
             () => {
               num.classList.remove("fadeout");
               num.classList.add("hidden");
 
-              // Decrement remaining notes count
               remainingNotes--;
 
-              // If no more notes left, show background image
+              // If no more notes left, instantly switch to background image
               if (remainingNotes === 0) {
                 container.classList.add("complete-challenge");
-                requestAnimationFrame(() => {
-                  container.classList.add("show");
-                });
               }
             },
-            { once: true } // run this once per element
+            { once: true }
           );
         });
 
