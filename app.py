@@ -1,9 +1,23 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 import boto3
 from botocore.exceptions import ClientError
 
 app = FastAPI()
+
+# Add the CORS middleware
+origins = [
+    "https://www.wsuchallenge.ca",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Create a DynamoDB resource and reference the table
 dynamodb = boto3.resource("dynamodb", region_name="us-east-2")

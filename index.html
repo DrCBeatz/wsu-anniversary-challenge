@@ -183,6 +183,11 @@
     #numbersContainer.complete-challenge .completion-message {
       display: block;
     }
+
+    .claimed {
+      visibility: hidden;
+      pointer-events: none;
+    }
   </style>
 </head>
 
@@ -225,55 +230,70 @@
   <script>
     const container = document.getElementById("numbersContainer");
 
-    // Optional: cycle through multiple "sticky note" colors
-    const noteColors = [
-      "#ffd3b6", // light orange
-      "#ffaaa5", // light pink
-      "#c0deff", // light blue
-      "#ffffbf", // light yellow
-      "#baffc9", // light green
-      "#ffc8dd", // pastel pink
-    ];
-
-    // We know from 5 to 195 by 5s is 39 notes total
-    let remainingNotes = 0;
-
-    // Generate numbers divisible by 5 from 5 to 195
+    // 39 notes (5..195 by 5)
+    const allNoteNumbers = [];
     for (let i = 5; i <= 195; i += 5) {
-      remainingNotes++; // increment each time we create a note
+      allNoteNumbers.push(i);
+    }
 
-      const num = document.createElement("span");
-      num.textContent = i;
-      num.classList.add("number");
+    async function fetchNotes() {
+      const response = await fetch("https://seoccq9gsk.execute-api.us-east-2.amazonaws.com/prod/notes");
+      const data = await response.json();
+      return data.notes; // e.g. [ {noteNumber:5, isClaimed:true}, ...]
+    }
 
-      // Pick a color in a cycle
-      num.style.backgroundColor = noteColors[(i / 5) % noteColors.length];
+    async function renderBoard() {
+      container.innerHTML = "";
 
-      // On click, fade out the sticky note
-      num.addEventListener("click", () => {
-        num.classList.add("fadeout");
-
-        // Once the fade-out finishes, hide it
-        num.addEventListener(
-          "transitionend",
-          () => {
-            num.classList.remove("fadeout");
-            num.classList.add("hidden");
-
-            remainingNotes--;
-
-            // If no more notes left, instantly switch to background image
-            if (remainingNotes === 0) {
-              container.classList.add("complete-challenge");
-            }
-          },
-          { once: true }
-        );
+      const noteData = await fetchNotes();
+      // create map for quick lookup
+      const noteMap = {};
+      noteData.forEach(n => {
+        noteMap[n.noteNumber] = n.isClaimed;
       });
 
-      container.appendChild(num);
+      const noteColors = ["#ffd3b6", "#ffaaa5", "#c0deff", "#ffffbf", "#baffc9", "#ffc8dd"];
+
+      allNoteNumbers.forEach((num, idx) => {
+        const isClaimed = !!noteMap[num];
+
+        const numEl = document.createElement("span");
+        numEl.classList.add("number");
+        numEl.textContent = num;
+        numEl.style.backgroundColor = noteColors[idx % noteColors.length];
+
+        if (isClaimed) {
+          numEl.classList.add("claimed"); // hides visually, but keeps space
+        } else {
+          numEl.addEventListener("click", () => claimNote(numEl, num));
+        }
+
+        container.appendChild(numEl);
+      });
     }
+
+    async function claimNote(element, noteNumber) {
+      try {
+        const response = await fetch(`https://seoccq9gsk.execute-api.us-east-2.amazonaws.com/prod/notes/${noteNumber}`, {
+          method: "POST"
+        });
+        if (!response.ok) throw new Error("Failed to claim note");
+
+        // fade out
+        element.classList.add("fadeout");
+        element.addEventListener("transitionend", () => {
+          element.classList.remove("fadeout");
+          element.classList.add("claimed");
+        }, { once: true });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", renderBoard);
   </script>
+
+
 </body>
 
 </html>
