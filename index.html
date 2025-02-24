@@ -259,19 +259,38 @@
         const resp = await fetch(`https://seoccq9gsk.execute-api.us-east-2.amazonaws.com/prod/notes/${number}`, {
           method: "POST"
         });
-        if (!resp.ok) throw new Error("Failed to claim note");
+        if (!resp.ok) {
+          // If it’s a 400 (or some known error for “already claimed”),
+          // you can still proceed with fadeout.
+          console.error(`Failed to claim note ${number}:`, resp.status, resp.statusText);
+          // optionally check resp.status === 400 or parse the JSON for a known error code
+        }
 
-        // Fade out
+        // Either way, fade out the note in the UI:
         el.classList.add("fadeout");
-
         el.addEventListener("transitionend", () => {
           el.classList.remove("fadeout");
           el.classList.add("claimed");
+
+          // Decrement your `remainingNotes`, call `checkCompletion()`, etc.
           remainingNotes--;
           checkCompletion();
         }, { once: true });
+
       } catch (err) {
+        // If fetch itself fails (network error), console it.
         console.error("Claim error:", err);
+
+        // You could decide *not* to fade out in a true network error if you like,
+        // or still fade out to keep it consistent.
+        el.classList.add("fadeout");
+        el.addEventListener("transitionend", () => {
+          el.classList.remove("fadeout");
+          el.classList.add("claimed");
+
+          remainingNotes--;
+          checkCompletion();
+        }, { once: true });
       }
     }
 
