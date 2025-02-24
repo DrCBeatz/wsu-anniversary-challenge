@@ -3,133 +3,82 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Wall Street United Church 197th Anniversary Challenge</title>
-
   <style>
     body {
       margin: 20px;
       font-family: sans-serif;
       background-color: #f9f9f9;
-      /* Light background to contrast board */
       color: #333;
-      /* Default text color */
     }
 
-    /* Title styling */
     .app-title {
       text-align: center;
       font-size: 26px;
       font-weight: bold;
-      margin: 0 0 30px;
-      /* Add more bottom margin for breathing room */
+      margin-bottom: 30px;
       color: #4d4d4d;
     }
 
-    /* Instructions area */
     .instructions {
       max-width: 600px;
       margin: 0 auto 30px;
-      /* center horizontally + add bottom margin */
       padding: 15px;
-      /* slightly larger padding for a nicer look */
       background-color: #fff8e1;
-      /* a light background for emphasis */
       border: 1px solid #ccc;
       border-radius: 5px;
     }
 
-    /* The board container */
+    /* Board container */
     #numbersContainer {
       position: relative;
-      /* enables absolutely positioned children */
       width: 600px;
       max-width: 100%;
-      /* Let it shrink on smaller screens */
-      margin: 0 auto;
-      /* Center horizontally */
-      margin-bottom: 20px;
-      /* Extra spacing below the board, if desired */
-
+      margin: 0 auto 20px;
       display: grid;
       grid-template-columns: repeat(10, 1fr);
       grid-gap: 10px;
-
-      /* The original yellowish background */
       background-color: #ffe85f;
       padding: 20px;
       border: 2px solid #ccc;
       border-radius: 5px;
       box-sizing: border-box;
-      /* Ensures padding/border are included in 'width' */
     }
 
-    /* Make the “sticky note” cells auto-size and keep them roughly square. */
     .number {
       background-color: #ffd3b6;
       border: 1px solid #000;
       border-radius: 4px;
       padding: 10px;
-      margin: 0;
       font-size: 18px;
       cursor: pointer;
       user-select: none;
       box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
-
-      /* keeps them square in modern browsers */
       aspect-ratio: 1 / 1;
       display: flex;
       justify-content: center;
       align-items: center;
-
-      /* Sticky notes still fade out on click */
       transition: opacity 0.8s, transform 0.2s;
+    }
+
+    .number:hover {
+      transform: rotate(-2deg) scale(1.03);
     }
 
     .fadeout {
       opacity: 0;
       pointer-events: none;
-      /* so it's unclickable while fading */
     }
 
-    /* Slight tilt/zoom effect on hover to mimic a sticky note effect */
-    .number:hover {
-      transform: rotate(-2deg) scale(1.03);
-    }
-
-    /* Hide the number when clicked */
     .hidden {
       visibility: hidden;
     }
 
-    /* Instructions breakpoints: reduce the max-width as the screen narrows */
-    @media (max-width: 900px) {
-      .instructions {
-        max-width: 550px;
-      }
-    }
-
-    @media (max-width: 700px) {
-      .instructions {
-        max-width: 450px;
-      }
-    }
-
-    @media (max-width: 500px) {
-      .instructions {
-        max-width: 300px;
-      }
-    }
-
-    /*
-        Board breakpoints:
-        Decrease number of columns (and thus overall width) as screen narrows.
-      */
     @media (max-width: 900px) {
       #numbersContainer {
         grid-template-columns: repeat(8, 1fr);
         width: 560px;
-        /* or 580px, so sticky notes don’t overflow */
       }
     }
 
@@ -150,20 +99,16 @@
     @media (min-width: 901px) {
       #numbersContainer {
         width: 680px;
-        /* or 700px if you want even more space on the right */
       }
     }
 
-    /* When complete, we switch the background to the church image. */
+    /* Completed state = church image */
     #numbersContainer.complete-challenge {
       background: url("wsu_church.jpg") center center / cover no-repeat;
+      background-color: transparent !important;
     }
 
-    /*
-       * Completion message styling:
-       * .completion-message is positioned absolutely over the container.
-       * It's hidden by default and shown when .complete-challenge is set.
-       */
+    /* The completion message, absolutely centered */
     .completion-message {
       display: none;
       position: absolute;
@@ -176,18 +121,13 @@
       text-align: center;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
       background-color: rgba(0, 0, 0, 0.4);
-
+      padding: 20px;
       border-radius: 10px;
       z-index: 10;
     }
 
-    /* #numbersContainer.complete-challenge .completion-message {
+    #numbersContainer.complete-challenge .completion-message {
       display: block;
-    } */
-
-    #numbersContainer.complete-challenge {
-      background: url("wsu_church.jpg") center center / cover no-repeat !important;
-      background-color: transparent !important;
     }
 
     .claimed {
@@ -197,25 +137,17 @@
 
     .spinner {
       display: none;
-      /* hidden by default */
       margin: 10px auto;
       width: 40px;
       height: 40px;
       border: 5px solid #ccc;
-      /* light grey border */
       border-top: 5px solid #333;
-      /* darker border on top slice */
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
 
-    /* Keyframes for the spin */
     @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
+      to {
         transform: rotate(360deg);
       }
     }
@@ -223,10 +155,7 @@
 </head>
 
 <body>
-  <!-- Title -->
-  <div class="app-title">
-    Wall Street United Church 197th Anniversary Challenge
-  </div>
+  <div class="app-title">Wall Street United Church 197th Anniversary Challenge</div>
 
   <!-- Instructions placeholder -->
   <div class="instructions">
@@ -252,9 +181,9 @@
   <!-- Loading spinner -->
   <div id="loadingSpinner" class="spinner"></div>
 
-  <!-- Number Board -->
+  <!-- Board -->
   <div id="numbersContainer">
-    <!-- Hidden text that appears when all notes are clicked -->
+    <!-- The completion message is inside the container -->
     <div class="completion-message">
       <p>Goal achieved!</p>
       <p>Thank you so much for your support of Wall Street!</p>
@@ -265,106 +194,97 @@
     const container = document.getElementById("numbersContainer");
     const spinner = document.getElementById("loadingSpinner");
 
-    // 39 notes (5..195 by 5)
-    const allNoteNumbers = [];
-    for (let i = 5; i <= 195; i += 5) {
-      allNoteNumbers.push(i);
-    }
+    // Grab a reference to the message element so we can re-append it
+    const messageEl = container.querySelector(".completion-message");
+
+    // We know from 5..195 by 5 => 39 notes
+    const allNoteNumbers = Array.from({ length: 39 }, (_, i) => (i + 1) * 5);
+    let remainingNotes = 39;
 
     async function fetchNotes() {
       const response = await fetch("https://seoccq9gsk.execute-api.us-east-2.amazonaws.com/prod/notes");
       const data = await response.json();
-      return data.notes; // e.g. [ {noteNumber:5, isClaimed:true}, ...]
+      // array like: [ {noteNumber:5, isClaimed:true}, ...]
+      return data.notes;
     }
 
     async function renderBoard() {
-      // Show the spinner before fetching
-      spinner.style.display = "block";
+      spinner.style.display = "block"; // show spinner
 
       try {
+        // Clear the board
         container.innerHTML = "";
+        // Then re-append the message element so it remains in the DOM
+        container.appendChild(messageEl);
 
-        // Fetch the note data
         const noteData = await fetchNotes();
 
-        // Create map for quick lookup
+        // Create map of noteNumber => isClaimed
         const noteMap = {};
         noteData.forEach(n => {
           noteMap[n.noteNumber] = n.isClaimed;
         });
 
-        const noteColors = ["#ffd3b6", "#ffaaa5", "#c0deff", "#ffffbf", "#baffc9", "#ffc8dd"];
+        remainingNotes = 39;
 
-        // Loop over all 39 numbers
+        // Build each sticky note
+        const colors = ["#ffd3b6", "#ffaaa5", "#c0deff", "#ffffbf", "#baffc9", "#ffc8dd"];
         allNoteNumbers.forEach((num, idx) => {
           const isClaimed = !!noteMap[num];
-
-          const numEl = document.createElement("span");
-          numEl.classList.add("number");
-          numEl.textContent = num;
-          numEl.style.backgroundColor = noteColors[idx % noteColors.length];
+          const noteEl = document.createElement("span");
+          noteEl.classList.add("number");
+          noteEl.textContent = num;
+          noteEl.style.backgroundColor = colors[idx % colors.length];
 
           if (isClaimed) {
-            // Keep the cell in layout but hidden
-            numEl.classList.add("claimed");
+            noteEl.classList.add("claimed");
+            remainingNotes--;
           } else {
-            // Allow claiming
-            numEl.addEventListener("click", () => claimNote(numEl, num));
+            noteEl.addEventListener("click", () => handleClaim(noteEl, num));
           }
-          container.appendChild(numEl);
+
+          container.appendChild(noteEl);
         });
-        // After building all items, check if all are claimed
-        let claimedCount = Object.values(noteMap).filter(Boolean).length;
-        if (claimedCount === allNoteNumbers.length) {
-          container.classList.add("complete-challenge");
-        } else {
-          container.classList.remove("complete-challenge");
-        }
+
+        checkCompletion();
       } catch (err) {
-        console.error("Error loading notes:", err);
-        // Optionally show an error message in the UI
+        console.error("Error fetching notes:", err);
       } finally {
-        // Hide the spinner, whether success or error
         spinner.style.display = "none";
       }
     }
 
-    async function claimNote(element, noteNumber) {
+    async function handleClaim(el, number) {
       try {
-        const response = await fetch(
-          `https://seoccq9gsk.execute-api.us-east-2.amazonaws.com/prod/notes/${noteNumber}`,
-          { method: "POST" }
-        );
-        if (!response.ok) throw new Error("Failed to claim note");
+        const resp = await fetch(`https://seoccq9gsk.execute-api.us-east-2.amazonaws.com/prod/notes/${number}`, {
+          method: "POST"
+        });
+        if (!resp.ok) throw new Error("Failed to claim note");
 
-        // Fade out the note first
-        element.classList.add("fadeout");
+        // Fade out
+        el.classList.add("fadeout");
 
-        // When the fade-out finishes, hide it for good
-        element.addEventListener("transitionend", () => {
-          // Remove fadeout
-          element.classList.remove("fadeout");
-
-          // Now hide it completely
-          element.classList.add("claimed");
-
-          // Check if all notes are claimed
-          const totalClaimedNow = document.querySelectorAll(".claimed").length;
-          if (totalClaimedNow === allNoteNumbers.length) {
-            console.log("All claimed, adding complete-challenge");
-            container.classList.add("complete-challenge");
-          }
+        el.addEventListener("transitionend", () => {
+          el.classList.remove("fadeout");
+          el.classList.add("claimed");
+          remainingNotes--;
+          checkCompletion();
         }, { once: true });
-
-      } catch (e) {
-        console.error(e);
+      } catch (err) {
+        console.error("Claim error:", err);
       }
     }
 
-    // Render the board on page load
+    function checkCompletion() {
+      if (remainingNotes === 0) {
+        container.classList.add("complete-challenge");
+      } else {
+        container.classList.remove("complete-challenge");
+      }
+    }
+
     document.addEventListener("DOMContentLoaded", renderBoard);
   </script>
-
 </body>
 
 </html>
