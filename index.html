@@ -29,10 +29,12 @@
     .instructions {
       max-width: 600px;
       margin: 0 auto 30px;
-      padding: 15px;
+      padding: 20px;
+      line-height: 1.5;
       background-color: #fff8e1;
       border: 1px solid #ccc;
       border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     }
 
     /* Board container */
@@ -44,11 +46,12 @@
       display: grid;
       grid-template-columns: repeat(10, 1fr);
       grid-gap: 10px;
-      background-color: #ffe85f;
+      background-color: #fff1a8;
       padding: 20px;
       border: 2px solid #ccc;
       border-radius: 5px;
       box-sizing: border-box;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     }
 
     .number {
@@ -69,6 +72,7 @@
 
     .number:hover {
       transform: rotate(-2deg) scale(1.03);
+      box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.3);
     }
 
     .fadeout {
@@ -107,13 +111,11 @@
       }
     }
 
-    /* Completed state = church image */
     #numbersContainer.complete-challenge {
       background: url("wsu_church.jpg") center center / cover no-repeat;
       background-color: transparent !important;
     }
 
-    /* The completion message, absolutely centered */
     .completion-message {
       display: none;
       position: absolute;
