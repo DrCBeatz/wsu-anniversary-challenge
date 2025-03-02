@@ -193,11 +193,13 @@
   </div>
 
   <script>
-    const LOCAL = true; // a quick hack to switch between local/production
+    const isLocalHost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
-    const apiBase = LOCAL
-      ? "http://localhost:8001"
-      : "https://seoccq9gsk.execute-api.us-east-2.amazonaws.com/prod";
+    const apiBase = isLocalHost
+      ? 'http://localhost:8001'
+      : 'https://seoccq9gsk.execute-api.us-east-2.amazonaws.com/prod';
+
+    console.log('Detected API base:', apiBase);
 
     const container = document.getElementById("numbersContainer");
     const spinner = document.getElementById("loadingSpinner");

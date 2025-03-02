@@ -13,4 +13,3 @@ aws dynamodb put-item \
   --item '{"noteNumber": {"N": "5"}, "isClaimed": {"BOOL": false}}' \
   --endpoint-url http://localhost:8000 \
   --region us-east-2
-# repeat for each noteNumber
