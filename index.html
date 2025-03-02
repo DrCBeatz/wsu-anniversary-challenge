@@ -1,3 +1,5 @@
+<!-- index.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -191,6 +193,12 @@
   </div>
 
   <script>
+    const LOCAL = true; // a quick hack to switch between local/production
+
+    const apiBase = LOCAL
+      ? "http://localhost:8001"
+      : "https://seoccq9gsk.execute-api.us-east-2.amazonaws.com/prod";
+
     const container = document.getElementById("numbersContainer");
     const spinner = document.getElementById("loadingSpinner");
 
@@ -202,7 +210,7 @@
     let remainingNotes = 39;
 
     async function fetchNotes() {
-      const response = await fetch("https://seoccq9gsk.execute-api.us-east-2.amazonaws.com/prod/notes");
+      const response = await fetch(`${apiBase}/notes`);
       const data = await response.json();
       // array like: [ {noteNumber:5, isClaimed:true}, ...]
       return data.notes;
@@ -256,9 +264,7 @@
 
     async function handleClaim(el, number) {
       try {
-        const resp = await fetch(`https://seoccq9gsk.execute-api.us-east-2.amazonaws.com/prod/notes/${number}`, {
-          method: "POST"
-        });
+        const resp = await fetch(`${apiBase}/notes/${number}`, { method: "POST" });
         if (!resp.ok) {
           // If it’s a 400 (or some known error for “already claimed”),
           // you can still proceed with fadeout.

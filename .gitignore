@@ -1,2 +1,4 @@
 package/
 my-lambda-deployment.zip
+.env
+.DS_store

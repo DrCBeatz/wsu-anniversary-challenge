@@ -1,0 +1,39 @@
+# docker-compose.yml
+
+services:
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    container_name: local-dynamodb
+    command: -jar DynamoDBLocal.jar -sharedDb
+    ports:
+      - "8000:8000"
+    volumes:
+      - dynamodb_data:/home/dynamodblocal/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: fastapi-server
+    depends_on:
+      - dynamodb
+    ports:
+      - "8001:8000"
+    environment:
+      - LOCAL_DYNAMODB_ENDPOINT=http://dynamodb:8000
+      - AWS_DEFAULT_REGION=us-east-2
+      - DYNAMODB_TABLE=StickyNotes
+
+  frontend:
+    image: nginx:alpine
+    container_name: wsu-frontend
+    depends_on:
+      - api
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
+      - ./wsu_church.jpg:/usr/share/nginx/html/wsu_church.jpg
+    ports:
+      - "8080:80"
+
+volumes:
+  dynamodb_data:

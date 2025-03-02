@@ -1,3 +1,5 @@
+# app.py
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
@@ -6,9 +8,18 @@ from botocore.exceptions import ClientError
 
 app = FastAPI()
 
-# Add the CORS middleware
+# 1) Detect if we’re running locally or in production
+LOCAL_DYNAMODB_ENDPOINT = os.getenv("LOCAL_DYNAMODB_ENDPOINT")
+DYNAMODB_REGION = os.getenv("AWS_DEFAULT_REGION", "us-east-2")
+TABLE_NAME = os.getenv("DYNAMODB_TABLE", "StickyNotes")
+
+# 2) Set up CORS
+# Add localhost:... to the list of allowed origins for development
 origins = [
     "https://www.wsuchallenge.ca",
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://localhost:8000"
 ]
 
 app.add_middleware(
@@ -19,14 +30,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create a DynamoDB resource and reference the table
-dynamodb = boto3.resource("dynamodb", region_name="us-east-2")
-table = dynamodb.Table("StickyNotes")
+# 3) Create a DynamoDB resource pointed either at local or production
+if LOCAL_DYNAMODB_ENDPOINT:
+    dynamodb = boto3.resource(
+        "dynamodb",
+        region_name=DYNAMODB_REGION,
+        endpoint_url=LOCAL_DYNAMODB_ENDPOINT,
+        aws_access_key_id="dummy",
+        aws_secret_access_key="dummy"
+    )
+else:
+    # Production path (AWS environment)
+    dynamodb = boto3.resource("dynamodb", region_name=DYNAMODB_REGION)
+
+table = dynamodb.Table(TABLE_NAME)
 
 @app.get("/notes")
 def list_notes():
     try:
-        # 'scan' returns all items in the table
         response = table.scan()
         items = response.get("Items", [])
         return {"notes": items}
@@ -37,35 +58,29 @@ def list_notes():
 def claim_note(note_id: int):
     """
     Mark the note as claimed by setting isClaimed = true.
-    If the note doesn't exist, or is already claimed, handle accordingly.
     """
     try:
-        # Optionally, you can add a condition to prevent re-claiming
         response = table.update_item(
             Key={"noteNumber": note_id},
             UpdateExpression="SET isClaimed = :val",
-            ConditionExpression="attribute_not_exists(isClaimed) OR isClaimed = :false", 
+            ConditionExpression="attribute_not_exists(isClaimed) OR isClaimed = :false",
             ExpressionAttributeValues={
-            ":val": True,
-            ":false": False
+                ":val": True,
+                ":false": False
             },
             ReturnValues="ALL_NEW"
         )
 
         updated_item = response.get("Attributes", {})
-        
-        # If 'Attributes' is empty, that might mean the note didn't exist
         if not updated_item:
             raise HTTPException(
                 status_code=404,
-                detail=f"Note {note_id} not found in StickyNotes table."
+                detail=f"Note {note_id} not found."
             )
 
         return {"status": "claimed", "note": updated_item}
 
     except ClientError as e:
-        # You can parse e.response['Error']['Code'] for more specifics
         raise HTTPException(status_code=400, detail=str(e))
 
-# Wrap the FastAPI app in Mangum for Lambda
 handler = Mangum(app)
