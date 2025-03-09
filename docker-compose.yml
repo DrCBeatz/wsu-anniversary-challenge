@@ -23,6 +23,7 @@ services:
       - LOCAL_DYNAMODB_ENDPOINT=http://dynamodb:8000
       - AWS_DEFAULT_REGION=us-east-2
       - DYNAMODB_TABLE=StickyNotes
+      - DEV_DELAY_SECS=3
 
   frontend:
     image: nginx:alpine

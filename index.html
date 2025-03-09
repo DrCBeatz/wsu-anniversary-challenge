@@ -80,14 +80,14 @@
       pointer-events: none;
     }
 
-    .hidden {
-      visibility: hidden;
-    }
-
     @media (max-width: 900px) {
       #numbersContainer {
         grid-template-columns: repeat(8, 1fr);
         width: 560px;
+      }
+
+      .app-title {
+        font-size: 28px;
       }
     }
 
@@ -96,6 +96,11 @@
         grid-template-columns: repeat(6, 1fr);
         width: 400px;
       }
+
+      .app-title {
+        font-size: 24px;
+      }
+
     }
 
     @media (max-width: 500px) {
@@ -158,6 +163,14 @@
         transform: rotate(360deg);
       }
     }
+
+    .hidden {
+      display: none;
+    }
+
+    #numbersContainer.hidden {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -189,7 +202,7 @@
   <div id="loadingSpinner" class="spinner"></div>
 
   <!-- Board -->
-  <div id="numbersContainer">
+  <div id="numbersContainer" class="hidden">
     <!-- The completion message is inside the container -->
     <div class="completion-message">
       <p>Goal achieved!</p>
@@ -266,6 +279,7 @@
         console.error("Error fetching notes:", err);
       } finally {
         spinner.style.display = "none";
+        container.classList.remove("hidden");
       }
     }
 

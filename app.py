@@ -5,8 +5,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 import boto3
 from botocore.exceptions import ClientError
+import time
 
 app = FastAPI()
+
+DEV_DELAY_SECS = float(os.environ.get("DEV_DELAY_SECS", "0"))
 
 # 1) Detect if we’re running locally or in production
 LOCAL_DYNAMODB_ENDPOINT = os.getenv("LOCAL_DYNAMODB_ENDPOINT")
@@ -14,7 +17,6 @@ DYNAMODB_REGION = os.getenv("AWS_DEFAULT_REGION", "us-east-2")
 TABLE_NAME = os.getenv("DYNAMODB_TABLE", "StickyNotes")
 
 # 2) Set up CORS
-# Add localhost:... to the list of allowed origins for development
 origins = [
     "https://www.wsuchallenge.ca",
     "http://localhost:8080",
@@ -47,6 +49,8 @@ table = dynamodb.Table(TABLE_NAME)
 
 @app.get("/notes")
 def list_notes():
+    if DEV_DELAY_SECS > 0:
+        time.sleep(DEV_DELAY_SECS)
     try:
         response = table.scan()
         items = response.get("Items", [])
